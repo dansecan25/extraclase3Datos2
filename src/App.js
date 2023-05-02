@@ -5,6 +5,12 @@ import Screen from "./components/Screen"; //la pantalla donde iran los numeros
 import ButtonBox from "./components/ButtonBox"; //la caja con los botones
 import Button from "./components/Button"; //botones
 
+const client = new WebSocket('ws://localhost:8080');
+
+client.addEventListener('error', (event) => {
+  throw new Error('Failed to connect to server');
+});
+
 const btnValues = [
   ["C", "+-", "%", "/"],
   [7, 8, 9, "X"],
@@ -42,7 +48,7 @@ const App = () => {//define un componente de react y de ahi su la calculadora
       });
     }
   };
-
+  //funcion para dibujar decimales
   const commaClickHandler = (e) => {
     e.preventDefault();
     const value = e.target.innerHTML;
@@ -55,7 +61,7 @@ const App = () => {//define un componente de react y de ahi su la calculadora
 
   const signClickHandler = (e) => {
     e.preventDefault();
-    const value = e.target.innerHTML;
+    const value = e.target.innerHTML; //obtiene el valor presionado
 
     setCalc({
       ...calc,
@@ -65,34 +71,30 @@ const App = () => {//define un componente de react y de ahi su la calculadora
     });
   };
 
-  const equalsClickHandler = () => {
+  const equalsClickHandler = async () => {
     if (calc.sign && calc.num) {
-      const math = (a, b, sign) =>
-        sign === "+"
-          ? a + b
-          : sign === "-"
-          ? a - b
-          : sign === "X"
-          ? a * b
-          : a / b;
-
+      const equation = `${removeSpaces(calc.res)}${calc.sign}${removeSpaces(calc.num)}`;
+      client.send(equation);
+      const result = await new Promise((resolve) => {
+        client.addEventListener('message', (event) => {
+          const data = event.data;
+          console.log(`Received from server: ${data}`);
+          resolve(data);
+        });
+      });
       setCalc({
         ...calc,
-        res:
-          calc.num === "0" && calc.sign === "/"
-            ? "Can't divide with 0"
-            : toLocaleString(
-                math(
-                  Number(removeSpaces(calc.res)),
-                  Number(removeSpaces(calc.num)),
-                  calc.sign
-                )
-              ),
+        res: calc.num === "0" && calc.sign === "/" ? "Can't divide with 0"
+          : toLocaleString(result),
         sign: "",
-        num: 0,
+        num: "",
       });
     }
   };
+  
+  
+  
+  
 
   const invertClickHandler = () => {
     setCalc({
