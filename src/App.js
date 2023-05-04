@@ -59,7 +59,7 @@ const App = () => {//define un componente de react y de ahi su la calculadora
     });
   };
 
-  const signClickHandler = (e) => {
+  const signClickHandler = (e) => { //guarda el signo presionado
     e.preventDefault();
     const value = e.target.innerHTML; //obtiene el valor presionado
 
@@ -92,9 +92,6 @@ const App = () => {//define un componente de react y de ahi su la calculadora
     }
   };
   
-  
-  
-  
 
   const invertClickHandler = () => {
     setCalc({
@@ -105,19 +102,37 @@ const App = () => {//define un componente de react y de ahi su la calculadora
     });
   };
 
-  const percentClickHandler = () => {
+  const percentClickHandler = async () => {
     let num = calc.num ? parseFloat(removeSpaces(calc.num)) : 0;
     let res = calc.res ? parseFloat(removeSpaces(calc.res)) : 0;
+    const equation1 = `${calc.sign}${num}`;
+      client.send(equation1);
+      const result1 = await new Promise((resolve) => {
+        client.addEventListener('message', (event) => {
+          const data = event.data;
+          console.log(`Received from server: ${data}`);
+          resolve(data);
+        });
+      });
+      const equation2 = `${calc.sign}${res}`;
+      client.send(equation2);
+      const result2 = await new Promise((resolve) => {
+        client.addEventListener('message', (event) => {
+          const data = event.data;
+          console.log(`Received from server: ${data}`);
+          resolve(data);
+        });
+      });
 
     setCalc({
       ...calc,
-      num: (num /= Math.pow(100, 1)),
-      res: (res /= Math.pow(100, 1)),
+      num: result1,
+      res: result2,
       sign: "",
     });
   };
 
-  const resetClickHandler = () => {
+  const resetHandler = () => { //resetea los numeros de la calculadora
     setCalc({
       ...calc,
       sign: "",
@@ -130,14 +145,14 @@ const App = () => {//define un componente de react y de ahi su la calculadora
     <Wrapper>
       <Screen value={calc.num ? calc.num : calc.res} /> 
       <ButtonBox>
-        {btnValues.flat().map((btn, i) => { 
+        {btnValues.flat().map((btn, i) => { //define un mapa en el que se colocan los botones en la app
           return (
             <Button
               key={i}
               className={btn === "=" ? "equals" : ""}
               value={btn}
               onClick={
-                btn === "C" ? resetClickHandler //el : es como un else, y el ? dice que hace
+                btn === "C" ? resetHandler //el : es como un else, y el ? dice que hace
                   : btn === "+-" ? invertClickHandler
                   : btn === "%" ? percentClickHandler
                   : btn === "=" ? equalsClickHandler
