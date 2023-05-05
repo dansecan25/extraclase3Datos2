@@ -21,7 +21,7 @@ void on_close(websocketpp::connection_hdl hdl) {
 
 void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg, server* websocketServer) {
     cout << "Received message from client: " << msg->get_payload() << endl;
-    
+    std::string mensaje= msg->get_payload();
     // Echo the received message back to the client
     server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
     con->send(std::string("42"), msg->get_opcode()); // send a number to the client
