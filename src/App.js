@@ -12,11 +12,11 @@ client.addEventListener('error', (event) => {
 });
 
 const btnValues = [
-  ["C", "+-", "%", "/"],
-  [7, 8, 9, "X"],
+  ["C", "+-","X","/"],
+  [7, 8, 9,"+"],
   [4, 5, 6, "-"],
-  [1, 2, 3, "+"],
-  [0, ".", "="],
+  [1, 2, 3, "."],
+  [0, "="],
 ]; //matriz con los valores de los botones
 //separa los numeros cada milesima
 const toLocaleString = (num) =>
@@ -102,36 +102,6 @@ const App = () => {//define un componente de react y de ahi su la calculadora
     });
   };
 
-  const percentClickHandler = async () => {
-    let num = calc.num ? parseFloat(removeSpaces(calc.num)) : 0;
-    let res = calc.res ? parseFloat(removeSpaces(calc.res)) : 0;
-    const equation1 = `${calc.sign}${num}`;
-      client.send(equation1);
-      const result1 = await new Promise((resolve) => {
-        client.addEventListener('message', (event) => {
-          const data = event.data;
-          console.log(`Received from server: ${data}`);
-          resolve(data);
-        });
-      });
-      const equation2 = `${calc.sign}${res}`;
-      client.send(equation2);
-      const result2 = await new Promise((resolve) => {
-        client.addEventListener('message', (event) => {
-          const data = event.data;
-          console.log(`Received from server: ${data}`);
-          resolve(data);
-        });
-      });
-
-    setCalc({
-      ...calc,
-      num: result1,
-      res: result2,
-      sign: "",
-    });
-  };
-
   const resetHandler = () => { //resetea los numeros de la calculadora
     setCalc({
       ...calc,
@@ -154,7 +124,6 @@ const App = () => {//define un componente de react y de ahi su la calculadora
               onClick={
                 btn === "C" ? resetHandler //el : es como un else, y el ? dice que hace
                   : btn === "+-" ? invertClickHandler
-                  : btn === "%" ? percentClickHandler
                   : btn === "=" ? equalsClickHandler
                   : btn === "/" || btn === "X" || btn === "-" || btn === "+" ? signClickHandler
                   : btn === "." ? commaClickHandler
