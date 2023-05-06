@@ -84,8 +84,7 @@ const App = () => {//define un componente de react y de ahi su la calculadora
       });
       setCalc({
         ...calc,
-        res: calc.num === "0" && calc.sign === "/" ? "Can't divide with 0"
-          : toLocaleString(result),
+        res: toLocaleString(result),
         sign: "",
         num: "",
       });

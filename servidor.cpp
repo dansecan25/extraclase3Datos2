@@ -22,10 +22,88 @@ void on_close(websocketpp::connection_hdl hdl) {
 void on_message(websocketpp::connection_hdl hdl, server::message_ptr msg, server* websocketServer) {
     cout << "Received message from client: " << msg->get_payload() << endl;
     std::string mensaje= msg->get_payload();
+    if(mensaje[0]!='-'){
+        for(int i=0; i<mensaje.length(); i++){
+                if(mensaje[i]=='+'){
+                    string a = mensaje.substr(0, i);
+                    string b = mensaje.substr(i+1,mensaje.length());
+                    string c = to_string(stof(a)+stof(b));
+                    server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                    con->send(std::string(c), msg->get_opcode()); // send a number to the client  
+                }
+                if(mensaje[i]=='-'){
+                    string a = mensaje.substr(0, i);
+                    string b = mensaje.substr(i+1,mensaje.length());
+                    string c = to_string(stof(a)-stof(b));
+                    server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                    con->send(std::string(c), msg->get_opcode()); // send a number to the client
+                }
+                if(mensaje[i]=='X'){
+                    string a = mensaje.substr(0, i);
+                    string b = mensaje.substr(i+1,mensaje.length());
+                    string c = to_string(stof(a)*stof(b));
+                    server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                    con->send(std::string(c), msg->get_opcode()); // send a number to the client
+                    
+                }
+                if(mensaje[i]=='/'){
+                    string a = mensaje.substr(0, i);
+                    string b = mensaje.substr(i+1,mensaje.length());
+                    if(stof(b)==0){
+                        server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                        con->send(std::string("Syntax Error"), msg->get_opcode()); // send a number to the client
+                    }
+                    else{
+                        string c = to_string(stof(a)/stof(b));
+                        server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                        con->send(std::string(c), msg->get_opcode()); // send a number to the client
+                    }
+                }
+            }
+    }
+    else{
+        for(int i=1; i<mensaje.length(); i++){
+                if(mensaje[i]=='+'){
+                    string a = mensaje.substr(0, i);
+                    string b = mensaje.substr(i+1,mensaje.length());
+                    string c = to_string(stof(a)+stof(b));
+                    server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                    con->send(std::string(c), msg->get_opcode()); // send a number to the client  
+                }
+                if(mensaje[i]=='-'){
+                    string a = mensaje.substr(0, i);
+                    string b = mensaje.substr(i+1,mensaje.length());
+                    string c = to_string(stof(a)-stof(b));
+                    server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                    con->send(std::string(c), msg->get_opcode()); // send a number to the client
+                }
+                if(mensaje[i]=='X'){
+                    string a = mensaje.substr(0, i);
+                    string b = mensaje.substr(i+1,mensaje.length());
+                    string c = to_string(stof(a)*stof(b));
+                    server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                    con->send(std::string(c), msg->get_opcode()); // send a number to the client
+                    
+                }
+                if(mensaje[i]=='/'){
+                    string a = mensaje.substr(0, i);
+                    string b = mensaje.substr(i+1,mensaje.length());
+                    if(stof(b)==0){
+                        server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                        con->send(std::string("Syntax Error"), msg->get_opcode()); // send a number to the client
+                    }
+                    else{
+                        string c = to_string(stof(a)/stof(b));
+                        server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+                        con->send(std::string(c), msg->get_opcode()); // send a number to the client
+                    }
+                }
+            }
+    }
     // Echo the received message back to the client
-    server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
+    /*server::connection_ptr con = websocketServer->get_con_from_hdl(hdl);
     con->send(std::string("42"), msg->get_opcode()); // send a number to the client
-    cout<<"Message 42 sent"<<endl;
+    cout<<"Message 42 sent"<<endl;*/
 
 }
 
